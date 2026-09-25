@@ -4,8 +4,17 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-android { namespace = "com.vahidnia.finance"; compileSdk = 35
-    defaultConfig { applicationId = "com.vahidnia.finance"; minSdk = 26; targetSdk = 35; versionCode = 1; versionName = "1.0" }
+android {
+    namespace = "com.vahidnia.finance"
+    compileSdk = 35
+
+    defaultConfig {
+        applicationId = "com.vahidnia.finance"
+        minSdk = 26
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
+    }
 }
 
 dependencies {
@@ -15,4 +24,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
+}
+
+kotlin {
+    jvmToolchain(17)
 }
