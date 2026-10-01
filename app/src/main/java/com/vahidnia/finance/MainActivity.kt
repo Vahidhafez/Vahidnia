@@ -20,6 +20,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -32,6 +33,7 @@ import java.util.Locale
 
 data class Tx(val title:String,val amount:Long,val income:Boolean)
 data class Work(val place:String,val from:String,val to:String,val note:String)
+data class BankCard(val bank:String,val number:String,val balance:Long,val color:Color)
 
 class MainActivity:ComponentActivity(){override fun onCreate(b:Bundle?){super.onCreate(b);setContent{App()}}}
 
@@ -59,7 +61,34 @@ class MainActivity:ComponentActivity(){override fun onCreate(b:Bundle?){super.on
  }
 }
 fun money(n:Long)=NumberFormat.getNumberInstance(Locale("fa","IR")).format(n)+" تومان"
-@Composable fun Home(t:List<Tx>,w:List<Work>){val i=t.filter{it.income}.sumOf{it.amount};val e=t.filter{!it.income}.sumOf{it.amount};Column(Modifier.fillMaxSize().padding(20.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){Text("مدیریت مالی وحیدینیا",style=MaterialTheme.typography.headlineSmall);Card(Modifier.fillMaxWidth()){Column(Modifier.padding(18.dp)){Text("موجودی");Text(money(i-e),style=MaterialTheme.typography.headlineMedium)}};Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp)){Card(Modifier.weight(1f)){Column(Modifier.padding(14.dp)){Text("درآمد");Text(money(i))}};Card(Modifier.weight(1f)){Column(Modifier.padding(14.dp)){Text("هزینه");Text(money(e))}}};Card(Modifier.fillMaxWidth()){Column(Modifier.padding(18.dp)){Text("روزهای کاری");Text(w.size.toString(),style=MaterialTheme.typography.headlineMedium)}}}}
+@Composable fun Home(t:List<Tx>,w:List<Work>){
+ val i=t.filter{it.income}.sumOf{it.amount};val e=t.filter{!it.income}.sumOf{it.amount}
+ val cards=listOf(
+  BankCard("بانک ملی","6037 •••• •••• ۱۲۳۴",i-e,Color(0xFF1769AA)),
+  BankCard("بانک مسکن","6280 •••• •••• ۵۶۷۸",0,Color(0xFF00897B)),
+  BankCard("بلوبانک","6219 •••• •••• ۹۱۰۱",0,Color(0xFF3155D8)),
+  BankCard("رد بانک","5022 •••• •••• ۲۳۴۵",0,Color(0xFFE53935)),
+  BankCard("بانک مهر","6063 •••• •••• ۶۷۸۹",0,Color(0xFF7B1FA2))
+ )
+ LazyColumn(Modifier.fillMaxSize().padding(horizontal=16.dp),contentPadding=PaddingValues(top=8.dp,bottom=24.dp),verticalArrangement=Arrangement.spacedBy(14.dp)){
+  item{Text("کارت‌های بانکی",style=MaterialTheme.typography.titleLarge,fontWeight=FontWeight.Bold)}
+  item{LazyRow(horizontalArrangement=Arrangement.spacedBy(12.dp),contentPadding=PaddingValues(end=4.dp)){items(cards){card->
+   Card(shape=RoundedCornerShape(24.dp),modifier=Modifier.width(285.dp).height(170.dp),colors=CardDefaults.cardColors(containerColor=card.color)){
+    Column(Modifier.fillMaxSize().padding(20.dp),verticalArrangement=Arrangement.SpaceBetween){
+     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){
+      Text(card.bank,color=Color.White,fontWeight=FontWeight.Bold,style=MaterialTheme.typography.titleMedium)
+      Icon(Icons.Default.CreditCard,null,tint=Color.White)
+     }
+     Column{Text(card.number,color=Color.White.copy(alpha=.9f),style=MaterialTheme.typography.titleMedium);Spacer(Modifier.height(8.dp));Text(money(card.balance),color=Color.White,fontWeight=FontWeight.Bold)}
+    }
+   }
+  }}}
+  item{Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(28.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){Column(Modifier.padding(22.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){Text("موجودی کل",style=MaterialTheme.typography.labelLarge);Text(money(i-e),style=MaterialTheme.typography.headlineMedium,fontWeight=FontWeight.Bold)}}}
+  item{Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp)){Card(Modifier.weight(1f)){Column(Modifier.padding(14.dp)){Text("درآمد");Text(money(i),fontWeight=FontWeight.Bold)}};Card(Modifier.weight(1f)){Column(Modifier.padding(14.dp)){Text("هزینه");Text(money(e),fontWeight=FontWeight.Bold)}}}}
+  item{Card(Modifier.fillMaxWidth()){Column(Modifier.padding(18.dp)){Text("روزهای کاری");Text(w.size.toString(),style=MaterialTheme.typography.headlineMedium)}}}
+ }
+}
+
 @Composable fun Finance(t:List<Tx>,set:(List<Tx>)->Unit){
  var show by remember{mutableStateOf(false)};var title by remember{mutableStateOf("")};var amount by remember{mutableStateOf("")};var inc by remember{mutableStateOf(true)}
  Column(Modifier.fillMaxSize().padding(horizontal=16.dp)){
