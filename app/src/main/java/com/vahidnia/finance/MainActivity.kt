@@ -4,6 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.consume
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.IntOffset
+import kotlin.math.abs
+import kotlin.math.roundToInt
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -55,8 +69,10 @@ fun money(n:Long)=NumberFormat.getNumberInstance(Locale("fa","IR")).format(n)+" 
   }
   LazyColumn(verticalArrangement=Arrangement.spacedBy(8.dp),contentPadding=PaddingValues(bottom=24.dp)){
    items(t.reversed()){x->
-    Card(shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
-     ListItem(headlineContent={Text(x.title.ifBlank{"بدون عنوان"},fontWeight=FontWeight.Medium)},supportingContent={Text(if(x.income)"درآمد" else "هزینه")},leadingContent={Surface(shape=RoundedCornerShape(14.dp),color=if(x.income)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer){Icon(if(x.income)Icons.Default.TrendingUp else Icons.Default.TrendingDown,null,Modifier.padding(10.dp))}},trailingContent={Text((if(x.income)"+" else "-")+money(x.amount),fontWeight=FontWeight.Bold)})
+    SwipeDeleteRow(onDelete={set(t.toMutableList().also{it.remove(x)})}){
+     Card(shape=RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth()){
+      ListItem(headlineContent={Text(x.title.ifBlank{"بدون عنوان"},fontWeight=FontWeight.Medium)},supportingContent={Text(if(x.income)"درآمد" else "هزینه")},leadingContent={Surface(shape=RoundedCornerShape(14.dp),color=if(x.income)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer){Icon(if(x.income)Icons.Default.TrendingUp else Icons.Default.TrendingDown,null,Modifier.padding(10.dp))}},trailingContent={Text((if(x.income)"+" else "-")+money(x.amount),fontWeight=FontWeight.Bold)})
+     }
     }
    }
   }
